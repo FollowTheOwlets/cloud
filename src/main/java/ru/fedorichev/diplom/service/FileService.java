@@ -7,14 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.fedorichev.diplom.component.FileInfo;
 import ru.fedorichev.diplom.config.FileUploadProperties;
-import ru.fedorichev.diplom.entity.File;
 import ru.fedorichev.diplom.exception.FileStorageException;
 import ru.fedorichev.diplom.exception.InvalidDataException;
-import ru.fedorichev.diplom.repository.FileRepository;
 import ru.fedorichev.diplom.repository.UserRepository;
 
 import javax.annotation.PostConstruct;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -22,19 +19,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class FileService {
 
-    private final FileRepository fileRepository;
     private final UserRepository userRepository;
 
     private final Path dirLocation;
 
-    public FileService(FileUploadProperties fileUploadProperties, FileRepository fileRepository, UserRepository userRepository) {
-        this.fileRepository = fileRepository;
+    public FileService(FileUploadProperties fileUploadProperties, UserRepository userRepository) {
         this.userRepository = userRepository;
         this.dirLocation = Paths.get(fileUploadProperties.getLocation())
                 .toAbsolutePath()
