@@ -19,8 +19,7 @@ public class ListFilesController {
     private final FileService fileService;
 
     @GetMapping()
-    public ResponseEntity<List<FileInfo>> downloadFile(@RequestParam(name = "limit") Integer limit) {
-
+    public ResponseEntity<List<FileInfo>> getFiles(@RequestParam(name = "limit") Integer limit) {
         return ResponseEntity.ok(fileService.getList(limit));
     }
 }

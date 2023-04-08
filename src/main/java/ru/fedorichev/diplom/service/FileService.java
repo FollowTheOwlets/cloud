@@ -13,6 +13,7 @@ import ru.fedorichev.diplom.repository.UserRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,12 +25,9 @@ import java.util.stream.Collectors;
 @Service
 public class FileService {
 
-    private final UserRepository userRepository;
-
     private final Path dirLocation;
 
-    public FileService(FileUploadProperties fileUploadProperties, UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public FileService(FileUploadProperties fileUploadProperties) {
         this.dirLocation = Paths.get(fileUploadProperties.getLocation())
                 .toAbsolutePath()
                 .normalize();
@@ -44,13 +42,14 @@ public class FileService {
         }
     }
 
-    public void upload(String fileName, MultipartFile file) {
+    public boolean upload(String fileName, MultipartFile file) {
         try {
             Path dFile = this.dirLocation.resolve(fileName);
             Files.copy(file.getInputStream(), dFile, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             throw new InvalidDataException("Невозможно загрузить файл");
         }
+        return true;
     }
 
     public Resource load(String fileName) {
@@ -68,16 +67,17 @@ public class FileService {
         }
     }
 
-    public void delete(String fileName) {
+    public boolean delete(String fileName) {
         Path file = this.dirLocation.resolve(fileName).normalize();
         try {
             Files.deleteIfExists(file);
         } catch (IOException e) {
             throw new FileStorageException("Проблема с удалением файла");
         }
+        return true;
     }
 
-    public void change(String fileName, String newFileName) {
+    public boolean change(String fileName, String newFileName) {
         try {
             Path dFile = this.dirLocation.resolve(fileName);
             Path newDFile = this.dirLocation.resolve(newFileName);
@@ -87,13 +87,14 @@ public class FileService {
             if (!resource.exists() && !resource.isReadable()) {
                 throw new InvalidDataException("Файл некорректен");
             }
-
-            Files.copy(resource.getInputStream(), newDFile, StandardCopyOption.REPLACE_EXISTING);
-
+            InputStream str = resource.getInputStream();
+            Files.copy(str, newDFile, StandardCopyOption.REPLACE_EXISTING);
+            str.close();
             delete(fileName);
-        } catch (IOException e) {
+        } catch(IOException e){
             throw new FileStorageException("Ошибка перезаписи файла");
         }
+        return true;
     }
 
     public List<FileInfo> getList(Integer limit) {

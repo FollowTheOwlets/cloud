@@ -1,19 +1,16 @@
 package ru.fedorichev.diplom.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "users")
 public class User {
     @Id
@@ -25,9 +22,5 @@ public class User {
     private String login;
 
     private String password;
-
-    @JsonIgnore
-    @Transient
-    private String authToken;
 
 }

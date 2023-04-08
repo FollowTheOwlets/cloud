@@ -23,7 +23,6 @@ public class AuthService {
                 .orElseThrow(() -> new AuthException("Пользователь не найден"));
         if (user.getPassword().equals(authRequest.getPassword())) {
             final String accessToken = jwtProvider.generateAccessToken(user);
-            user.setAuthToken(accessToken);
             return new Login(accessToken);
         } else {
             throw new AuthException("Неправильный пароль");
